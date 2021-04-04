@@ -19,15 +19,30 @@ public class StocksViewModel extends AndroidViewModel {
 
     private StocksRepoImpl repository;
 
+    public void insertStocks(List<Stock> stocks) {
+        repository.insertStocks(stocks);
+    }
+
+    public void insertStock(Stock stock) {
+        repository.insertStock(stock);
+    }
+
+    public void updateStock(Stock stock) {
+        repository.updateStock(stock);
+    }
+
     public StocksViewModel(@NonNull Application application) {
         super(application);
         repository = new StocksRepoImpl(application);
     }
 
-    public LiveData<List<Stock>> getStocks(String value) {
+    public LiveData<List<Stock>> getDbStocks(String value) {
         Log.d(TAG, "onChanged: came");
-        repository.getStocks(value);
         return repository.getDbStocks(value);
+    }
+
+    public LiveData<List<Stock>> getRemoteStocks(String value) {
+        return repository.getRemoteStocks(value);
     }
 
 //    public LiveData<List<Stock>> getMostWatchedStocks() {

@@ -11,8 +11,9 @@ import com.idyllic.stocks.data.db.StockDao;
 import com.idyllic.stocks.data.db.StockDatabase;
 import com.idyllic.stocks.data.models.Stock;
 import com.idyllic.stocks.data.models.StockResponse;
-import com.idyllic.stocks.utils.Constants;
+import com.idyllic.stocks.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -26,33 +27,41 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
     private StockDao stockDao;
 
     public static final String TAG = "StocksrepoImpl";
+    private MutableLiveData<List<Stock>> remoteStocks = new MutableLiveData<>();
 
     private StocksApi stocksApi;
-    public MutableLiveData<StockResponse> stockResponse = new MutableLiveData<>();
+//    public MutableLiveData<StockResponse> stockResponse = new MutableLiveData<>();
 
     public StocksRepoImpl(Application application) {
         stockDao = StockDatabase.getInstance(application).stockDao();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
+                .baseUrl(Utils.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         stocksApi = retrofit.create(StocksApi.class);
     }
 
     @Override
-    public StockResponse getStocks(String value) {
+    public LiveData<List<Stock>> getRemoteStocks(String value) {
+        loadRemoteStocks(value);
+        return remoteStocks;
+    }
+
+    private void loadRemoteStocks(String value) {
         Call<StockResponse> stocks = stocksApi.getStocks(value);
         stocks.enqueue(new Callback<StockResponse>() {
             @Override
             public void onResponse(Call<StockResponse> call, Response<StockResponse> response) {
                 if (response.isSuccessful()) {
-                    stockResponse.postValue(response.body());
+                    List<Stock> stocks = new ArrayList<>();
                     for (Stock stock : response.body().getStocks()) {
                         Log.d(TAG, "onResponse: " + stock.getRegularMarketPrice());
                         Log.d(TAG, "onResponse: " + stock.getSymbol());
                         stock.setStockValue(value);
-                        insertStock(stock);
+                        stocks.add(stock);
+
                     }
+                    remoteStocks.postValue(stocks);
                 }
             }
 
@@ -61,7 +70,10 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
                 Log.e(TAG, "onFailure: ", t);
             }
         });
-        return null;
+    }
+
+    void doNothing(int num) {
+
     }
 
 //    public StockResponse getMostWatchedStocks() {
@@ -87,14 +99,34 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
 //        return null;
 //    }
 
+//    @Override
+//    public LiveData<List<Stock>> getAllStocks() {
+//        return allStocks;
+//    }
+
     @Override
     public LiveData<List<Stock>> getDbStocks(String stockValue) {
         return stockDao.getStocks(stockValue);
     }
 
     @Override
+    public Stock getDbStock(String symbol) {
+        return stockDao.getStock(symbol);
+    }
+
+    @Override
+    public void updateStock(Stock stock) {
+        new UpdateStockAsyncTask(stockDao).execute(stock);
+    }
+
+    @Override
     public void insertStock(Stock stock) {
         new InsertStockAsyncTask(stockDao).execute(stock);
+    }
+
+    @Override
+    public void insertStocks(List<Stock> stocks) {
+        new InsertStocksAsyncTask(stockDao).execute(stocks);
     }
 
     @Override
@@ -123,6 +155,21 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
         @Override
         protected Void doInBackground(Stock... stocks) {
             stockDao.insertStock(stocks[0]);
+            return null;
+        }
+    }
+
+    private class InsertStocksAsyncTask extends AsyncTask<List<Stock>, Void, Void> {
+
+        private StockDao stockDao;
+
+        public InsertStocksAsyncTask(StockDao stockDao) {
+            this.stockDao = stockDao;
+        }
+
+        @Override
+        protected Void doInBackground(List<Stock>... stocks) {
+            stockDao.insertStocks(stocks[0]);
             return null;
         }
     }
@@ -157,6 +204,21 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
         @Override
         protected Void doInBackground(Void... voids) {
             stockDao.dislike(symbol);
+            return null;
+        }
+    }
+
+    private class UpdateStockAsyncTask extends AsyncTask<Stock, Void, Void> {
+
+        private StockDao stockDao;
+
+        public UpdateStockAsyncTask(StockDao stockDao) {
+            this.stockDao = stockDao;
+        }
+
+        @Override
+        protected Void doInBackground(Stock... stock) {
+            stockDao.updateStock(stock[0]);
             return null;
         }
     }

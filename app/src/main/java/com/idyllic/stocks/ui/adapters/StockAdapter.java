@@ -14,22 +14,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.idyllic.stocks.R;
 import com.idyllic.stocks.data.models.Stock;
-import com.idyllic.stocks.utils.Constants;
+
+import static com.idyllic.stocks.utils.Utils.round;
 
 public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolder> {
 
     private StockAdapterListener adapterListener;
+    private HomeStockAdapterListener homeStockAdapterListener;
 
-    public StockAdapter(StockAdapterListener adapterListener) {
+    public StockAdapter(StockAdapterListener adapterListener, HomeStockAdapterListener homeStockAdapterListener) {
         super(Stock.DIFF_CALLBACK);
         this.adapterListener = adapterListener;
+        this.homeStockAdapterListener = homeStockAdapterListener;
     }
 
     @NonNull
     @Override
     public StockAdapter.StockViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stock, parent, false);
-        return new StockViewHolder(view, adapterListener);
+        return new StockViewHolder(view, adapterListener, homeStockAdapterListener);
     }
 
     @Override
@@ -50,12 +53,15 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
         private TextView regularMarketChangeTv;
         private ImageView starIv;
         private StockAdapterListener adapterListener;
+        private HomeStockAdapterListener homeStockAdapterListener;
+        private int position;
 
         private CardView cardView;
 
-        public StockViewHolder(@NonNull View itemView, StockAdapterListener adapterListener) {
+        public StockViewHolder(@NonNull View itemView, StockAdapterListener adapterListener, HomeStockAdapterListener homeStockAdapterListener) {
             super(itemView);
             this.adapterListener = adapterListener;
+            this.homeStockAdapterListener = homeStockAdapterListener;
         }
 
         public void bind(Stock stock, int position) {
@@ -65,6 +71,8 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
             regularMarketPriceTv = itemView.findViewById(R.id.regular_market_price);
             regularMarketChangeTv = itemView.findViewById(R.id.regular_market_change);
             starIv = itemView.findViewById(R.id.star_iv);
+
+            this.position = position;
 
             symbolTv.setText(stock.getSymbol());
             shortNameTv.setText(stock.getShortName());
@@ -94,6 +102,13 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
                 }
             });
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    homeStockAdapterListener.onCardClick(stock);
+                }
+            });
+
             int cornerRadius = (int) (itemView.getContext().getResources().getDisplayMetrics().density * 16);
             cardView.setRadius(cornerRadius);
             if (position % 2 == 0) {
@@ -102,18 +117,13 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
                 cardView.setCardBackgroundColor(Color.TRANSPARENT);
             }
         }
-
-        public double round(double value, int places) {
-            if (places < 0) throw new IllegalArgumentException();
-
-            long factor = (long) Math.pow(10, places);
-            value = value * factor;
-            long tmp = Math.round(value);
-            return (double) tmp / factor;
-        }
     }
 
     public interface StockAdapterListener {
         void onStarClick(Stock stock, ImageView starIv);
+    }
+
+    public interface HomeStockAdapterListener {
+        void onCardClick(Stock stock);
     }
 }

@@ -19,9 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.idyllic.stocks.R;
 import com.idyllic.stocks.data.models.Stock;
 import com.idyllic.stocks.ui.adapters.StockAdapter;
-import com.idyllic.stocks.utils.Constants;
+import com.idyllic.stocks.utils.Utils;
 import com.idyllic.stocks.viewmodel.StocksViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StocksFragment extends Fragment implements StockAdapter.StockAdapterListener {
@@ -36,14 +37,22 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
     private ProgressBar progressBar;
     private boolean isFavourites;
     private String stockValue;
+    private List<Stock> dbLikedStocks = new ArrayList<>();
+    private List<Stock> dbStocks = new ArrayList<>();
+    private StockAdapter.HomeStockAdapterListener homeStockAdapterListener;
 
-    public static StocksFragment getInstance(boolean isFavourites, Constants.StockValues stockValue) {
-        StocksFragment stocksFragment = new StocksFragment();
+    public static StocksFragment getInstance(boolean isFavourites, Utils.StockValues stockValue, StockAdapter.HomeStockAdapterListener homeStockAdapterListener) {
+        StocksFragment stocksFragment = new StocksFragment(homeStockAdapterListener);
         Bundle bundle = new Bundle();
         bundle.putBoolean(IS_FAVOURITES, isFavourites);
         bundle.putString(STOCK_VALUE, stockValue.toString().toLowerCase());
+
         stocksFragment.setArguments(bundle);
         return stocksFragment;
+    }
+
+    public StocksFragment(StockAdapter.HomeStockAdapterListener homeStockAdapterListener) {
+        this.homeStockAdapterListener = homeStockAdapterListener;
     }
 
     @Nullable
@@ -55,7 +64,7 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
         progressBar = view.findViewById(R.id.stocks_progress_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
-        adapter = new StockAdapter(this);
+        adapter = new StockAdapter(this, homeStockAdapterListener);
         recyclerView.setAdapter(adapter);
 
         isFavourites = getArguments().getBoolean(IS_FAVOURITES);
@@ -63,7 +72,15 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
 
         viewModel = new ViewModelProvider(this).get(StocksViewModel.class);
 
-        Log.d(TAG, "onCreateView: PageItem Enum: " + Constants.StockValues.DAY_GAINERS.toString().toLowerCase());
+        Log.d(TAG, "onCreateView: PageItem Enum: " + Utils.StockValues.DAY_GAINERS.toString().toLowerCase());
+
+        viewModel.getLikedStocks().observe(getViewLifecycleOwner(), new Observer<List<Stock>>() {
+            @Override
+            public void onChanged(List<Stock> likedStocks) {
+                dbLikedStocks = likedStocks;
+
+            }
+        });
 
         if (isFavourites) {
             viewModel.getLikedStocks().observe(getActivity(), new Observer<List<Stock>>() {
@@ -75,12 +92,28 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
                 }
             });
         } else {
-            viewModel.getStocks(stockValue).observe(getActivity(), new Observer<List<Stock>>() {
+
+            viewModel.getRemoteStocks(stockValue).observe(getViewLifecycleOwner(), new Observer<List<Stock>>() {
+                @Override
+                public void onChanged(List<Stock> remoteStocks) {
+
+                    for (Stock remoteStock : remoteStocks) {
+                        for (Stock dbLikedStock : dbLikedStocks) {
+                            if (dbLikedStock.getSymbol().equals(remoteStock.getSymbol()))
+                                remoteStock.setLiked(true);
+                        }
+                    }
+                    viewModel.insertStocks(remoteStocks);
+                }
+            });
+
+            viewModel.getDbStocks(stockValue).observe(getViewLifecycleOwner(), new Observer<List<Stock>>() {
                 @Override
                 public void onChanged(List<Stock> stocks) {
 //                    adapter.notifyDataSetChanged();
                     progressBar.setVisibility(View.GONE);
 //                    Log.d(TAG, "onChanged: " + stocks.get(0).getRegularMarketChange());
+                    dbStocks = stocks;
                     adapter.submitList(stocks);
                 }
             });
@@ -101,7 +134,13 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
     @Override
     public void onResume() {
         super.onResume();
-        adapter.notifyDataSetChanged();
+        Log.d(TAG, "onStart: HIIIIIIIIIII");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.submitList(dbStocks);
     }
 
     @Override
@@ -109,10 +148,13 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
         boolean isLiked = stock.isLiked();
         if (isLiked) {
             starIv.setImageResource(R.drawable.ic_star_unliked);
+//            stock.setLiked(false);
             viewModel.dislike(stock.getSymbol());
         } else {
             starIv.setImageResource(R.drawable.ic_star_liked);
+//            stock.setLiked(true);
             viewModel.like(stock.getSymbol());
         }
     }
+
 }

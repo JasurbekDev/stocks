@@ -2,14 +2,17 @@ package com.idyllic.stocks.data.models;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 @Entity(tableName = "stocks_table")
-public class Stock{
+public class Stock implements Serializable {
 
 	public static final DiffUtil.ItemCallback<Stock> DIFF_CALLBACK = new DiffUtil.ItemCallback<Stock>() {
 		@Override
@@ -20,7 +23,13 @@ public class Stock{
 		@Override
 		public boolean areContentsTheSame(@NonNull Stock oldItem, @NonNull Stock newItem) {
 			return oldItem.symbol.equals(newItem.symbol) &&
-					oldItem.shortName.equals(newItem.shortName);
+					oldItem.isLiked == newItem.isLiked;
+		}
+
+		@Nullable
+		@Override
+		public Object getChangePayload(@NonNull Stock oldItem, @NonNull Stock newItem) {
+			return false;
 		}
 	};
 
@@ -118,6 +127,7 @@ public class Stock{
 	private String region;
 
 	@SerializedName("shortName")
+	@Nullable
 	private String shortName;
 
 	@SerializedName("fiftyDayAverageChangePercent")

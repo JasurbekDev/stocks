@@ -7,18 +7,29 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.idyllic.stocks.data.models.Stock;
+import com.idyllic.stocks.ui.layouts.ChartFragment;
 import com.idyllic.stocks.ui.layouts.StocksFragment;
-import com.idyllic.stocks.utils.Constants;
+import com.idyllic.stocks.utils.Utils;
 
 import java.util.List;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
 
-    private List<Constants.StockValues> stockValues;
+    private List<Utils.StockValues> stockValues;
+    private StockAdapter.HomeStockAdapterListener homeStockAdapterListener;
+    private Stock stock;
 
-    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Constants.StockValues> stockValues) {
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Utils.StockValues> stockValues, Stock stock) {
         super(fragmentActivity);
         this.stockValues = stockValues;
+        this.stock = stock;
+    }
+
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Utils.StockValues> stockValues, StockAdapter.HomeStockAdapterListener homeStockAdapterListener) {
+        super(fragmentActivity);
+        this.stockValues = stockValues;
+        this.homeStockAdapterListener = homeStockAdapterListener;
     }
 
     @Override
@@ -29,7 +40,18 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        Constants.StockValues stockValues = this.stockValues.get(position);
-        return StocksFragment.getInstance(stockValues == Constants.StockValues.FAVOURITES, Constants.StockValues.values()[position]);
+        Utils.StockValues stockValue = this.stockValues.get(position);
+        switch (stockValue) {
+            case CHART:
+                return ChartFragment.getInstance(stock);
+            case SUMMARY:
+
+                break;
+
+            case NEWS:
+
+                break;
+        }
+        return StocksFragment.getInstance(stockValue == Utils.StockValues.FAVOURITES, Utils.StockValues.values()[position], homeStockAdapterListener);
     }
 }
