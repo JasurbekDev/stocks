@@ -9,6 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.idyllic.stocks.data.db.StockDao;
 import com.idyllic.stocks.data.db.StockDatabase;
+import com.idyllic.stocks.data.models.SearchResponse;
+import com.idyllic.stocks.data.models.SearchResult;
 import com.idyllic.stocks.data.models.Stock;
 import com.idyllic.stocks.data.models.StockResponse;
 import com.idyllic.stocks.utils.Utils;
@@ -28,17 +30,25 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
 
     public static final String TAG = "StocksrepoImpl";
     private MutableLiveData<List<Stock>> remoteStocks = new MutableLiveData<>();
+    private MutableLiveData<List<SearchResult>> searchResultStocks = new MutableLiveData<>();
 
-    private StocksApi stocksApi;
+    private MboumApi mboumApi;
+    private FinnhubApi finnhubApi;
 //    public MutableLiveData<StockResponse> stockResponse = new MutableLiveData<>();
 
     public StocksRepoImpl(Application application) {
         stockDao = StockDatabase.getInstance(application).stockDao();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Utils.BASE_URL)
+                .baseUrl(Utils.MBOUM_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        stocksApi = retrofit.create(StocksApi.class);
+        mboumApi = retrofit.create(MboumApi.class);
+
+        Retrofit retrofit2 = new Retrofit.Builder()
+                .baseUrl(Utils.FINNHUB_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        finnhubApi = retrofit2.create(FinnhubApi.class);
     }
 
     @Override
@@ -48,7 +58,7 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
     }
 
     private void loadRemoteStocks(String value) {
-        Call<StockResponse> stocks = stocksApi.getStocks(value);
+        Call<StockResponse> stocks = mboumApi.getStocks(value);
         stocks.enqueue(new Callback<StockResponse>() {
             @Override
             public void onResponse(Call<StockResponse> call, Response<StockResponse> response) {
@@ -221,5 +231,28 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
             stockDao.updateStock(stock[0]);
             return null;
         }
+    }
+
+    public void searchStocks(String query) {
+        finnhubApi.searchStocks(query).enqueue(new Callback<SearchResponse>() {
+            @Override
+            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                Log.d(TAG, "onResponse: Response code" + response.code());
+                Log.d(TAG, "onResponse: Response count" + response.body().getCount());
+                if (response.isSuccessful()) {
+                    searchResultStocks.postValue(response.body().getResults());
+                    Log.d(TAG, "onResponse: Keldi");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SearchResponse> call, Throwable t) {
+                Log.e(TAG, "onResponse: Failed" + t.getMessage());
+            }
+        });
+    }
+
+    public LiveData<List<SearchResult>> getSearchResults() {
+        return searchResultStocks;
     }
 }

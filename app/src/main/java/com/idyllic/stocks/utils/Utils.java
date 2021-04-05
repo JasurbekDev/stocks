@@ -1,8 +1,10 @@
 package com.idyllic.stocks.utils;
 
 public class Utils {
-    public static final String BASE_URL = "https://mboum.com/api/v1/";
-    public static final String API_KEY = "2v8m3Jpzpz9NvEbrOLKx2kkag1PTZcuK1kRuo3jxEyyW4slM5Ff3PSVhif3U";
+    public static final String MBOUM_BASE_URL = "https://mboum.com/api/v1/";
+    public static final String FINNHUB_BASE_URL = "https://finnhub.io/api/v1/";
+    public static final String MBOUM_API_KEY = "2v8m3Jpzpz9NvEbrOLKx2kkag1PTZcuK1kRuo3jxEyyW4slM5Ff3PSVhif3U";
+    public static final String FINNHUB_API_KEY = "c1l6gla37fko6in51s40";
 
     public enum StockValues {
         DAY_GAINERS,

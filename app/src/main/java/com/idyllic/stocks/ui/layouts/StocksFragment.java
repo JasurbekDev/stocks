@@ -39,9 +39,9 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
     private String stockValue;
     private List<Stock> dbLikedStocks = new ArrayList<>();
     private List<Stock> dbStocks = new ArrayList<>();
-    private StockAdapter.HomeStockAdapterListener homeStockAdapterListener;
+    private HomeStockAdapterListener homeStockAdapterListener;
 
-    public static StocksFragment getInstance(boolean isFavourites, Utils.StockValues stockValue, StockAdapter.HomeStockAdapterListener homeStockAdapterListener) {
+    public static StocksFragment getInstance(boolean isFavourites, Utils.StockValues stockValue, HomeStockAdapterListener homeStockAdapterListener) {
         StocksFragment stocksFragment = new StocksFragment(homeStockAdapterListener);
         Bundle bundle = new Bundle();
         bundle.putBoolean(IS_FAVOURITES, isFavourites);
@@ -51,7 +51,10 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
         return stocksFragment;
     }
 
-    public StocksFragment(StockAdapter.HomeStockAdapterListener homeStockAdapterListener) {
+    public StocksFragment() {
+    }
+
+    public StocksFragment(HomeStockAdapterListener homeStockAdapterListener) {
         this.homeStockAdapterListener = homeStockAdapterListener;
     }
 

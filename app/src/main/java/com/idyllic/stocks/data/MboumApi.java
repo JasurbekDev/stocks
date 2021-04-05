@@ -11,13 +11,13 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
-public interface StocksApi {
+public interface MboumApi {
 
-    @Headers("X-Mboum-Secret:" + Utils.API_KEY)
+    @Headers("X-Mboum-Secret:" + Utils.MBOUM_API_KEY)
     @GET("co/collections/?start=1")
     Call<StockResponse> getStocks(@Query("list") String value);
 
-    @Headers("X-Mboum-Secret:" + Utils.API_KEY)
+    @Headers("X-Mboum-Secret:" + Utils.MBOUM_API_KEY)
     @GET("qu/quote/")
     Call<List<Stock>> getStock(@Query("symbol") String symbol);
 

@@ -1,17 +1,25 @@
 package com.idyllic.stocks.ui.layouts;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -23,16 +31,21 @@ import com.idyllic.stocks.ui.adapters.StockAdapter;
 import com.idyllic.stocks.ui.adapters.ViewPagerAdapter;
 import com.idyllic.stocks.utils.Utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements StockAdapter.HomeStockAdapterListener {
+import static androidx.navigation.Navigation.findNavController;
+
+@SuppressLint("ParcelCreator")
+public class HomeFragment extends Fragment implements HomeStockAdapterListener, View.OnClickListener {
     public static final String TAG = "HomeFragment";
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private List<String> titles = new ArrayList<>();
     private SearchView searchView;
     private View view;
+    private NavController navController;
 
     @Nullable
     @Override
@@ -47,6 +60,8 @@ public class HomeFragment extends Fragment implements StockAdapter.HomeStockAdap
         titles.add("Favourites");
         titles.add("Most actives");
         titles.add("Day losers");
+
+        setSearchViewOnClickListener(searchView, this);
 
 //        TextView textView = new TextView(getContext());
 //        textView.setText("Stocks");
@@ -108,9 +123,64 @@ public class HomeFragment extends Fragment implements StockAdapter.HomeStockAdap
         return view;
     }
 
+
+
+    public static void setSearchViewOnClickListener(View v, View.OnClickListener listener) {
+        if (v instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) v;
+            int count = group.getChildCount();
+            for (int i = 0; i < count; i++) {
+                View child = group.getChildAt(i);
+                if (child instanceof LinearLayout || child instanceof RelativeLayout) {
+                    setSearchViewOnClickListener(child, listener);
+                }
+
+                if (child instanceof TextView) {
+                    TextView text = (TextView) child;
+                    text.setFocusable(false);
+                }
+                child.setOnClickListener(listener);
+            }
+        }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        navController = findNavController(view);
+    }
+
+//    @Override
+//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//        navController = Navigation.findNavController(view);
+//    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
     @Override
     public void onCardClick(Stock stock) {
         HomeFragmentDirections.ActionHomeFragmentToCardFragment action = HomeFragmentDirections.actionHomeFragmentToCardFragment(stock);
-        Navigation.findNavController(view).navigate(action);
+
+        navController.navigate(action);
+    }
+
+    @Override
+    public void onClick(View v) {
+        findNavController(view).navigate(HomeFragmentDirections.actionHomeFragmentToSearchFragment(this));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
     }
 }

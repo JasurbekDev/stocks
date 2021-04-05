@@ -9,7 +9,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.idyllic.stocks.data.models.Stock;
 import com.idyllic.stocks.ui.layouts.ChartFragment;
+import com.idyllic.stocks.ui.layouts.HomeStockAdapterListener;
 import com.idyllic.stocks.ui.layouts.StocksFragment;
+import com.idyllic.stocks.ui.layouts.SummaryFragment;
 import com.idyllic.stocks.utils.Utils;
 
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.List;
 public class ViewPagerAdapter extends FragmentStateAdapter {
 
     private List<Utils.StockValues> stockValues;
-    private StockAdapter.HomeStockAdapterListener homeStockAdapterListener;
+    private HomeStockAdapterListener homeStockAdapterListener;
     private Stock stock;
 
     public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Utils.StockValues> stockValues, Stock stock) {
@@ -26,7 +28,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
         this.stock = stock;
     }
 
-    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Utils.StockValues> stockValues, StockAdapter.HomeStockAdapterListener homeStockAdapterListener) {
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Utils.StockValues> stockValues, HomeStockAdapterListener homeStockAdapterListener) {
         super(fragmentActivity);
         this.stockValues = stockValues;
         this.homeStockAdapterListener = homeStockAdapterListener;
@@ -45,9 +47,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
             case CHART:
                 return ChartFragment.getInstance(stock);
             case SUMMARY:
-
-                break;
-
+                return SummaryFragment.getInstance(stock);
             case NEWS:
 
                 break;

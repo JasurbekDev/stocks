@@ -22,10 +22,22 @@
         <action
             android:id="@+id/action_homeFragment_to_cardFragment"
             app:destination="@id/cardFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/stocksFragment"
         android:name="com.idyllic.stocks.ui.layouts.StocksFragment"
         android:label="fragment_stocks"
         tools:layout="@layout/fragment_stocks" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.idyllic.stocks.ui.layouts.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <argument
+            android:name="homeStockAdapterListener"
+            app:argType="com.idyllic.stocks.ui.layouts.HomeStockAdapterListener" />
+    </fragment>
 </navigation>

@@ -1,7 +1,6 @@
 package com.idyllic.stocks.ui.adapters;
 
 import android.graphics.Color;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,25 +13,26 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.idyllic.stocks.R;
+import com.idyllic.stocks.data.models.SearchResult;
 import com.idyllic.stocks.data.models.Stock;
 import com.idyllic.stocks.ui.layouts.HomeStockAdapterListener;
 
 import static com.idyllic.stocks.utils.Utils.round;
 
-public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolder> {
+public class SearchAdapter extends ListAdapter<SearchResult, SearchAdapter.StockViewHolder> {
 
     private StockAdapterListener adapterListener;
     private HomeStockAdapterListener homeStockAdapterListener;
 
-    public StockAdapter(StockAdapterListener adapterListener, HomeStockAdapterListener homeStockAdapterListener) {
-        super(Stock.DIFF_CALLBACK);
-        this.adapterListener = adapterListener;
+    public SearchAdapter(HomeStockAdapterListener homeStockAdapterListener) {
+        super(SearchResult.DIFF_CALLBACK);
+//        this.adapterListener = adapterListener;
         this.homeStockAdapterListener = homeStockAdapterListener;
     }
 
     @NonNull
     @Override
-    public StockAdapter.StockViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SearchAdapter.StockViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stock, parent, false);
         return new StockViewHolder(view, adapterListener, homeStockAdapterListener);
     }
@@ -66,7 +66,7 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
             this.homeStockAdapterListener = homeStockAdapterListener;
         }
 
-        public void bind(Stock stock, int position) {
+        public void bind(SearchResult stock, int position) {
             cardView = itemView.findViewById(R.id.stock_item_root);
             symbolTv = itemView.findViewById(R.id.symbol);
             shortNameTv = itemView.findViewById(R.id.short_name);
@@ -77,39 +77,14 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
             this.position = position;
 
             symbolTv.setText(stock.getSymbol());
-            shortNameTv.setText(stock.getShortName());
+            shortNameTv.setText(stock.getDescription());
 
-            double regularMarketChange = stock.getRegularMarketChange();
-
-            if (regularMarketChange < 0) {
-                regularMarketChangeTv.setTextColor(itemView.getContext().getResources().getColor(R.color.red));
-            } else {
-                regularMarketChangeTv.setTextColor(itemView.getContext().getResources().getColor(R.color.green));
-            }
-
-            regularMarketPriceTv.setText(stock.getRegularMarketPrice() + " " + stock.getCurrency());
-            regularMarketChangeTv.setText(((regularMarketChange >= 0) ? "+" : "") + round(regularMarketChange, 2) + " " + stock.getCurrency() + " (" + round(stock.getRegularMarketChangePercent(), 2) + "%)");
-
-            boolean isLiked = stock.isLiked();
-            if (isLiked) {
-                starIv.setImageResource(R.drawable.ic_star_liked);
-            } else {
-                starIv.setImageResource(R.drawable.ic_star_unliked);
-            }
-
-            starIv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    adapterListener.onStarClick(stock, starIv);
-                }
-            });
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    homeStockAdapterListener.onCardClick(stock);
-                }
-            });
+//            itemView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    homeStockAdapterListener.onCardClick(stock);
+//                }
+//            });
 
             int cornerRadius = (int) (itemView.getContext().getResources().getDisplayMetrics().density * 16);
             cardView.setRadius(cornerRadius);

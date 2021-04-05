@@ -37,12 +37,12 @@ public class ChartFragment extends Fragment {
     private TextView regularMarketChangeTv;
     private LineChart lineChart;
 
-    public ChartFragment(Stock stock) {
-        this.stock = stock;
-    }
-
     public static ChartFragment getInstance(Stock stock) {
-        return new ChartFragment(stock);
+        ChartFragment chartFragment = new ChartFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("stock", stock);
+        chartFragment.setArguments(bundle);
+        return chartFragment;
     }
 
     @Nullable
@@ -50,6 +50,8 @@ public class ChartFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_chart, container, false);
+
+        stock = (Stock) getArguments().getSerializable("stock");
 
         initLayout(view);
 
@@ -76,10 +78,10 @@ public class ChartFragment extends Fragment {
 
     private void setupLineChart(Stock stock, LineChart lineChart) {
         ArrayList<String> xValues = new ArrayList<>();
-        xValues.add("Closed");
+//        xValues.add("Closed");
         xValues.add("Open");
 //        xValues.add("Low");
-        xValues.add("High");
+        xValues.add("Day high");
         xValues.add("Now");
 
         setMarkerView(lineChart, stock.getCurrency());
@@ -174,11 +176,11 @@ public class ChartFragment extends Fragment {
 
 
         ArrayList<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(previousClose, 0));
-        entries.add(new Entry(regularMarketOpen, 1));
+//        entries.add(new Entry(previousClose, 0));
+        entries.add(new Entry(regularMarketOpen, 0));
 //        entries.add(new Entry(dayLow, 2));
-        entries.add(new Entry(dayHigh, 2));
-        entries.add(new Entry(now, 3));
+        entries.add(new Entry(dayHigh, 1));
+        entries.add(new Entry(now, 2));
         return entries;
     }
 }

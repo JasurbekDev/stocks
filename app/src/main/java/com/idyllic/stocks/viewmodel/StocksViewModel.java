@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.idyllic.stocks.data.StocksRepoImpl;
+import com.idyllic.stocks.data.models.SearchResult;
 import com.idyllic.stocks.data.models.Stock;
 import com.idyllic.stocks.data.models.StockResponse;
 
@@ -61,5 +62,13 @@ public class StocksViewModel extends AndroidViewModel {
 
     public void dislike(String symbol) {
         repository.disliked(symbol);
+    }
+
+    public void searchStocks(String query) {
+        repository.searchStocks(query);
+    }
+
+    public LiveData<List<SearchResult>> getSearchResults() {
+        return repository.getSearchResults();
     }
 }
