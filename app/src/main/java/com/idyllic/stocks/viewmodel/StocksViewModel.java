@@ -42,8 +42,12 @@ public class StocksViewModel extends AndroidViewModel {
         return repository.getDbStocks(value);
     }
 
-    public LiveData<List<Stock>> getRemoteStocks(String value) {
-        return repository.getRemoteStocks(value);
+    public LiveData<List<Stock>> getRemoteStocks(String value, int pageNum) {
+        return repository.getRemoteStocks(value, pageNum);
+    }
+
+    public LiveData<StockResponse> getStockResponse() {
+        return repository.getStockResponse();
     }
 
 //    public LiveData<List<Stock>> getMostWatchedStocks() {
@@ -64,11 +68,11 @@ public class StocksViewModel extends AndroidViewModel {
         repository.disliked(symbol);
     }
 
-    public void searchStocks(String query) {
-        repository.searchStocks(query);
+    public LiveData<List<SearchResult>> searchStocks(String query) {
+        return repository.searchStocks(query);
     }
 
-    public LiveData<List<SearchResult>> getSearchResults() {
-        return repository.getSearchResults();
-    }
+//    public LiveData<List<SearchResult>> getSearchResults() {
+//        return repository.getSearchResults();
+//    }
 }

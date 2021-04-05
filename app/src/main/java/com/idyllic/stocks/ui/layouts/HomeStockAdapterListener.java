@@ -4,6 +4,6 @@ import android.os.Parcelable;
 
 import com.idyllic.stocks.data.models.Stock;
 
-public interface HomeStockAdapterListener extends Parcelable {
+public interface HomeStockAdapterListener {
     void onCardClick(Stock stock);
 }

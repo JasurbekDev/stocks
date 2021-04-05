@@ -1,29 +1,38 @@
 package com.idyllic.stocks.ui.layouts;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.idyllic.stocks.R;
 import com.idyllic.stocks.data.models.Stock;
+import com.idyllic.stocks.data.models.StockResponse;
 import com.idyllic.stocks.ui.adapters.StockAdapter;
 import com.idyllic.stocks.utils.Utils;
 import com.idyllic.stocks.viewmodel.StocksViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static androidx.recyclerview.widget.RecyclerView.NO_ID;
 
 public class StocksFragment extends Fragment implements StockAdapter.StockAdapterListener {
 
@@ -37,15 +46,19 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
     private ProgressBar progressBar;
     private boolean isFavourites;
     private String stockValue;
+    private ProgressBar paginationProgressBar;
     private List<Stock> dbLikedStocks = new ArrayList<>();
     private List<Stock> dbStocks = new ArrayList<>();
-    private HomeStockAdapterListener homeStockAdapterListener;
+    private int searchPageNumber = 1;
+    private View view;
+    private int searchTotalPageNumber;
 
     public static StocksFragment getInstance(boolean isFavourites, Utils.StockValues stockValue, HomeStockAdapterListener homeStockAdapterListener) {
-        StocksFragment stocksFragment = new StocksFragment(homeStockAdapterListener);
+        StocksFragment stocksFragment = new StocksFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean(IS_FAVOURITES, isFavourites);
         bundle.putString(STOCK_VALUE, stockValue.toString().toLowerCase());
+//        bundle.putParcelable("homeStockAdapterListener", homeStockAdapterListener);
 
         stocksFragment.setArguments(bundle);
         return stocksFragment;
@@ -54,20 +67,22 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
     public StocksFragment() {
     }
 
-    public StocksFragment(HomeStockAdapterListener homeStockAdapterListener) {
-        this.homeStockAdapterListener = homeStockAdapterListener;
-    }
+//    public StocksFragment(HomeStockAdapterListener homeStockAdapterListener) {
+//        this.homeStockAdapterListener = homeStockAdapterListener;
+//    }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_stocks, container, false);
+        view = inflater.inflate(R.layout.fragment_stocks, container, false);
 
         recyclerView = view.findViewById(R.id.stock_rv);
         progressBar = view.findViewById(R.id.stocks_progress_bar);
+        paginationProgressBar = view.findViewById(R.id.paging_progress_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
-        adapter = new StockAdapter(this, homeStockAdapterListener);
+        adapter = new StockAdapter(this);
         recyclerView.setAdapter(adapter);
 
         isFavourites = getArguments().getBoolean(IS_FAVOURITES);
@@ -76,6 +91,15 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
         viewModel = new ViewModelProvider(this).get(StocksViewModel.class);
 
         Log.d(TAG, "onCreateView: PageItem Enum: " + Utils.StockValues.DAY_GAINERS.toString().toLowerCase());
+
+        viewModel.getStockResponse().observe(getViewLifecycleOwner(), new Observer<StockResponse>() {
+            @Override
+            public void onChanged(StockResponse response) {
+                if (response != null) {
+                    searchTotalPageNumber = (int) Math.ceil((double) response.getTotal() / (double) response.getCount());
+                }
+            }
+        });
 
         viewModel.getLikedStocks().observe(getViewLifecycleOwner(), new Observer<List<Stock>>() {
             @Override
@@ -96,7 +120,7 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
             });
         } else {
 
-            viewModel.getRemoteStocks(stockValue).observe(getViewLifecycleOwner(), new Observer<List<Stock>>() {
+            viewModel.getRemoteStocks(stockValue, searchPageNumber).observe(getViewLifecycleOwner(), new Observer<List<Stock>>() {
                 @Override
                 public void onChanged(List<Stock> remoteStocks) {
 
@@ -122,9 +146,24 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
             });
         }
 
+        recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(!recyclerView.canScrollVertically(RecyclerView.FOCUS_DOWN)) {
+                    searchPageNumber++;
+                    if (searchTotalPageNumber != 0 && searchPageNumber <= searchTotalPageNumber) {
+                        paginationProgressBar.setVisibility(View.VISIBLE);
+                        viewModel.getRemoteStocks(stockValue, searchPageNumber);
+                    }
+                }
+
+            }
+        });
+
 
         return view;
     }
+
 
     public String getStockValues() {
         return stockValue;
@@ -160,4 +199,10 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
         }
     }
 
+    @Override
+    public void onCardClick(Stock stock) {
+        HomeFragmentDirections.ActionHomeFragmentToCardFragment action = HomeFragmentDirections.actionHomeFragmentToCardFragment(stock);
+
+        Navigation.findNavController(view).navigate(action);
+    }
 }

@@ -8,5 +8,5 @@ import com.idyllic.stocks.data.models.StockResponse;
 import java.util.List;
 
 public interface StocksRepo {
-    LiveData<List<Stock>> getRemoteStocks(String value);
+    LiveData<List<Stock>> getRemoteStocks(String value, int pageNum);
 }

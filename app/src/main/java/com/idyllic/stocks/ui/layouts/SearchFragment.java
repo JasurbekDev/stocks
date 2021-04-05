@@ -1,15 +1,23 @@
 package com.idyllic.stocks.ui.layouts;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -50,12 +58,16 @@ public class SearchFragment extends Fragment implements StockAdapter.StockAdapte
 
         setupSearchView(searchView);
 
-        viewModel.getSearchResults().observe(getViewLifecycleOwner(), new Observer<List<SearchResult>>() {
-            @Override
-            public void onChanged(List<SearchResult> searchResults) {
-                adapter.submitList(searchResults);
-            }
-        });
+        ConnectivityManager connectivityManager = getActivity().getSystemService(ConnectivityManager.class);
+        Network currentNetwork = connectivityManager.getActiveNetwork();
+
+//        viewModel.getSearchResults().observe(getViewLifecycleOwner(), new Observer<List<SearchResult>>() {
+//            @Override
+//            public void onChanged(List<SearchResult> searchResults) {
+//                progressBar.setVisibility(View.GONE);
+//                adapter.submitList(searchResults);
+//            }
+//        });
 
         return view;
     }
@@ -67,14 +79,22 @@ public class SearchFragment extends Fragment implements StockAdapter.StockAdapte
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setHasFixedSize(true);
-        adapter = new SearchAdapter(homeStockAdapterListener);
+        adapter = new SearchAdapter();
         recyclerView.setAdapter(adapter);
 
     }
 
-    private void setupSearchView(SearchView searchView) {
+    @Override
+    public void onStart() {
+        super.onStart();
         searchView.requestFocus();
-        searchView.onActionViewExpanded();
+        InputMethodManager imm = (InputMethodManager)   getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+    }
+
+    private void setupSearchView(SearchView searchView) {
+
+        searchView.findFocus();
         ImageView searchClose = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
         ImageView backIcon = searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
         searchClose.setImageResource(R.drawable.ic_close);
@@ -94,9 +114,16 @@ public class SearchFragment extends Fragment implements StockAdapter.StockAdapte
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
-                progressBar.setVisibility(View.VISIBLE);
-                viewModel.searchStocks(newText);
+                if (isNetworkConnectionAvailable()) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    viewModel.searchStocks(newText).observe(getViewLifecycleOwner(), new Observer<List<SearchResult>>() {
+                        @Override
+                        public void onChanged(List<SearchResult> searchResults) {
+                            progressBar.setVisibility(View.GONE);
+                            adapter.submitList(searchResults);
+                        }
+                    });
+                }
                 return true;
             }
         });
@@ -105,5 +132,18 @@ public class SearchFragment extends Fragment implements StockAdapter.StockAdapte
     @Override
     public void onStarClick(Stock stock, ImageView starIv) {
 
+    }
+
+    @Override
+    public void onCardClick(Stock stock) {
+
+    }
+
+    boolean isNetworkConnectionAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = cm.getActiveNetworkInfo();
+        if (info == null) return false;
+        NetworkInfo.State network = info.getState();
+        return (network == NetworkInfo.State.CONNECTED || network == NetworkInfo.State.CONNECTING);
     }
 }

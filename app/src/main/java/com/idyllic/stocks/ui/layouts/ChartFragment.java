@@ -80,7 +80,7 @@ public class ChartFragment extends Fragment {
         ArrayList<String> xValues = new ArrayList<>();
 //        xValues.add("Closed");
         xValues.add("Open");
-//        xValues.add("Low");
+        xValues.add("Low");
         xValues.add("Day high");
         xValues.add("Now");
 
@@ -178,9 +178,9 @@ public class ChartFragment extends Fragment {
         ArrayList<Entry> entries = new ArrayList<>();
 //        entries.add(new Entry(previousClose, 0));
         entries.add(new Entry(regularMarketOpen, 0));
-//        entries.add(new Entry(dayLow, 2));
-        entries.add(new Entry(dayHigh, 1));
-        entries.add(new Entry(now, 2));
+        entries.add(new Entry(dayLow, 1));
+        entries.add(new Entry(dayHigh, 2));
+        entries.add(new Entry(now, 3));
         return entries;
     }
 }

@@ -13,10 +13,12 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.idyllic.stocks.R;
 import com.idyllic.stocks.data.models.Stock;
 import com.idyllic.stocks.ui.layouts.HomeStockAdapterListener;
 
+import static com.idyllic.stocks.utils.Utils.FINNHUB_STOCK_LOGO_URL;
 import static com.idyllic.stocks.utils.Utils.round;
 
 public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolder> {
@@ -24,7 +26,7 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
     private StockAdapterListener adapterListener;
     private HomeStockAdapterListener homeStockAdapterListener;
 
-    public StockAdapter(StockAdapterListener adapterListener, HomeStockAdapterListener homeStockAdapterListener) {
+    public StockAdapter(StockAdapterListener adapterListener) {
         super(Stock.DIFF_CALLBACK);
         this.adapterListener = adapterListener;
         this.homeStockAdapterListener = homeStockAdapterListener;
@@ -54,6 +56,7 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
         private TextView regularMarketPriceTv;
         private TextView regularMarketChangeTv;
         private ImageView starIv;
+        private ImageView stockIv;
         private StockAdapterListener adapterListener;
         private HomeStockAdapterListener homeStockAdapterListener;
         private int position;
@@ -73,6 +76,7 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
             regularMarketPriceTv = itemView.findViewById(R.id.regular_market_price);
             regularMarketChangeTv = itemView.findViewById(R.id.regular_market_change);
             starIv = itemView.findViewById(R.id.star_iv);
+            stockIv = itemView.findViewById(R.id.stock_iv);
 
             this.position = position;
 
@@ -80,6 +84,13 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
             shortNameTv.setText(stock.getShortName());
 
             double regularMarketChange = stock.getRegularMarketChange();
+
+            Glide.with(itemView.getContext())
+                    .load(FINNHUB_STOCK_LOGO_URL + stock.getSymbol())
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_no_image)
+                    .into(stockIv);
+
 
             if (regularMarketChange < 0) {
                 regularMarketChangeTv.setTextColor(itemView.getContext().getResources().getColor(R.color.red));
@@ -107,7 +118,7 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    homeStockAdapterListener.onCardClick(stock);
+                    adapterListener.onCardClick(stock);
                 }
             });
 
@@ -123,6 +134,8 @@ public class StockAdapter extends ListAdapter<Stock, StockAdapter.StockViewHolde
 
     public interface StockAdapterListener {
         void onStarClick(Stock stock, ImageView starIv);
+
+        void onCardClick(Stock stock);
     }
 
 }

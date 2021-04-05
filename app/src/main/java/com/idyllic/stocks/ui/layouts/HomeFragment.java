@@ -37,8 +37,7 @@ import java.util.List;
 
 import static androidx.navigation.Navigation.findNavController;
 
-@SuppressLint("ParcelCreator")
-public class HomeFragment extends Fragment implements HomeStockAdapterListener, View.OnClickListener {
+public class HomeFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = "HomeFragment";
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
@@ -77,7 +76,7 @@ public class HomeFragment extends Fragment implements HomeStockAdapterListener, 
         stockValues.add(Utils.StockValues.MOST_ACTIVES);
         stockValues.add(Utils.StockValues.DAY_LOSERS);
 
-        ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(requireActivity(), stockValues, this);
+        ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(requireActivity(), stockValues);
         viewPager.setAdapter(pagerAdapter);
 
         new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
@@ -156,31 +155,9 @@ public class HomeFragment extends Fragment implements HomeStockAdapterListener, 
 //        navController = Navigation.findNavController(view);
 //    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume: ");
-    }
-
-    @Override
-    public void onCardClick(Stock stock) {
-        HomeFragmentDirections.ActionHomeFragmentToCardFragment action = HomeFragmentDirections.actionHomeFragmentToCardFragment(stock);
-
-        navController.navigate(action);
-    }
 
     @Override
     public void onClick(View v) {
-        findNavController(view).navigate(HomeFragmentDirections.actionHomeFragmentToSearchFragment(this));
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
+        findNavController(view).navigate(HomeFragmentDirections.actionHomeFragmentToSearchFragment());
     }
 }

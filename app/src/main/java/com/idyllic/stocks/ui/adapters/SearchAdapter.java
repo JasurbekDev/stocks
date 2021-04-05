@@ -24,10 +24,10 @@ public class SearchAdapter extends ListAdapter<SearchResult, SearchAdapter.Stock
     private StockAdapterListener adapterListener;
     private HomeStockAdapterListener homeStockAdapterListener;
 
-    public SearchAdapter(HomeStockAdapterListener homeStockAdapterListener) {
+    public SearchAdapter() {
         super(SearchResult.DIFF_CALLBACK);
 //        this.adapterListener = adapterListener;
-        this.homeStockAdapterListener = homeStockAdapterListener;
+//        this.homeStockAdapterListener = homeStockAdapterListener;
     }
 
     @NonNull
@@ -78,6 +78,10 @@ public class SearchAdapter extends ListAdapter<SearchResult, SearchAdapter.Stock
 
             symbolTv.setText(stock.getSymbol());
             shortNameTv.setText(stock.getDescription());
+
+            starIv.setVisibility(View.GONE);
+            regularMarketPriceTv.setVisibility(View.GONE);
+            regularMarketChangeTv.setVisibility(View.GONE);
 
 //            itemView.setOnClickListener(new View.OnClickListener() {
 //                @Override

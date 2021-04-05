@@ -42,6 +42,8 @@ public class Stock implements Serializable {
 
 	private String stockValue;
 
+	private String website;
+
 	@SerializedName("twoHundredDayAverageChangePercent")
 	private double twoHundredDayAverageChangePercent;
 
@@ -234,6 +236,14 @@ public class Stock implements Serializable {
 
 	public void setLiked(boolean liked) {
 		isLiked = liked;
+	}
+
+	public String getWebsite() {
+		return website;
+	}
+
+	public void setWebsite(String website) {
+		this.website = website;
 	}
 
 	public String getStockValue() {

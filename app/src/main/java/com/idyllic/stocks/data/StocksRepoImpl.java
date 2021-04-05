@@ -31,6 +31,7 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
     public static final String TAG = "StocksrepoImpl";
     private MutableLiveData<List<Stock>> remoteStocks = new MutableLiveData<>();
     private MutableLiveData<List<SearchResult>> searchResultStocks = new MutableLiveData<>();
+    private MutableLiveData<StockResponse> stockResponse = new MutableLiveData<>();
 
     private MboumApi mboumApi;
     private FinnhubApi finnhubApi;
@@ -52,17 +53,22 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
     }
 
     @Override
-    public LiveData<List<Stock>> getRemoteStocks(String value) {
-        loadRemoteStocks(value);
+    public LiveData<List<Stock>> getRemoteStocks(String value, int pageNum) {
+        loadRemoteStocks(value, pageNum);
         return remoteStocks;
     }
 
-    private void loadRemoteStocks(String value) {
-        Call<StockResponse> stocks = mboumApi.getStocks(value);
+    public LiveData<StockResponse> getStockResponse() {
+        return stockResponse;
+    }
+
+    private void loadRemoteStocks(String value, int pageNum) {
+        Call<StockResponse> stocks = mboumApi.getStocks(value, pageNum);
         stocks.enqueue(new Callback<StockResponse>() {
             @Override
             public void onResponse(Call<StockResponse> call, Response<StockResponse> response) {
                 if (response.isSuccessful()) {
+                    stockResponse.postValue(response.body());
                     List<Stock> stocks = new ArrayList<>();
                     for (Stock stock : response.body().getStocks()) {
                         Log.d(TAG, "onResponse: " + stock.getRegularMarketPrice());
@@ -233,7 +239,7 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
         }
     }
 
-    public void searchStocks(String query) {
+    public LiveData<List<SearchResult>> searchStocks(String query) {
         finnhubApi.searchStocks(query).enqueue(new Callback<SearchResponse>() {
             @Override
             public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
@@ -250,6 +256,8 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
                 Log.e(TAG, "onResponse: Failed" + t.getMessage());
             }
         });
+
+        return searchResultStocks;
     }
 
     public LiveData<List<SearchResult>> getSearchResults() {

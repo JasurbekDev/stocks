@@ -22,6 +22,11 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     private HomeStockAdapterListener homeStockAdapterListener;
     private Stock stock;
 
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Utils.StockValues> stockValues) {
+        super(fragmentActivity);
+        this.stockValues = stockValues;
+    }
+
     public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Utils.StockValues> stockValues, Stock stock) {
         super(fragmentActivity);
         this.stockValues = stockValues;
