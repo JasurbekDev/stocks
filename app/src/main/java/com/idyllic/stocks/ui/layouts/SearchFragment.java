@@ -43,6 +43,7 @@ public class SearchFragment extends Fragment implements StockAdapter.StockAdapte
     private RecyclerView recyclerView;
     private SearchAdapter adapter;
     private View view;
+    private ImageView emptyBoxIv;
     private HomeStockAdapterListener homeStockAdapterListener;
 
     @Nullable
@@ -58,17 +59,6 @@ public class SearchFragment extends Fragment implements StockAdapter.StockAdapte
 
         setupSearchView(searchView);
 
-        ConnectivityManager connectivityManager = getActivity().getSystemService(ConnectivityManager.class);
-        Network currentNetwork = connectivityManager.getActiveNetwork();
-
-//        viewModel.getSearchResults().observe(getViewLifecycleOwner(), new Observer<List<SearchResult>>() {
-//            @Override
-//            public void onChanged(List<SearchResult> searchResults) {
-//                progressBar.setVisibility(View.GONE);
-//                adapter.submitList(searchResults);
-//            }
-//        });
-
         return view;
     }
 
@@ -76,6 +66,7 @@ public class SearchFragment extends Fragment implements StockAdapter.StockAdapte
         searchView = view.findViewById(R.id.search_bar);
         progressBar = view.findViewById(R.id.search_progress_bar);
         recyclerView = view.findViewById(R.id.search_rv);
+        emptyBoxIv = view.findViewById(R.id.empty_box_iv);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setHasFixedSize(true);
@@ -116,10 +107,16 @@ public class SearchFragment extends Fragment implements StockAdapter.StockAdapte
             public boolean onQueryTextChange(String newText) {
                 if (isNetworkConnectionAvailable()) {
                     progressBar.setVisibility(View.VISIBLE);
+                    emptyBoxIv.setVisibility(View.GONE);
                     viewModel.searchStocks(newText).observe(getViewLifecycleOwner(), new Observer<List<SearchResult>>() {
                         @Override
                         public void onChanged(List<SearchResult> searchResults) {
                             progressBar.setVisibility(View.GONE);
+                            if (searchResults.isEmpty()) {
+                                emptyBoxIv.setVisibility(View.VISIBLE);
+                            } else {
+                                emptyBoxIv.setVisibility(View.GONE);
+                            }
                             adapter.submitList(searchResults);
                         }
                     });

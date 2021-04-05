@@ -1,6 +1,7 @@
 package com.idyllic.stocks.ui.adapters;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +13,15 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.idyllic.stocks.R;
 import com.idyllic.stocks.data.models.SearchResult;
 import com.idyllic.stocks.data.models.Stock;
 import com.idyllic.stocks.ui.layouts.HomeStockAdapterListener;
 
+import java.util.Arrays;
+
+import static com.idyllic.stocks.utils.Utils.FINNHUB_STOCK_LOGO_URL;
 import static com.idyllic.stocks.utils.Utils.round;
 
 public class SearchAdapter extends ListAdapter<SearchResult, SearchAdapter.StockViewHolder> {
@@ -54,6 +59,7 @@ public class SearchAdapter extends ListAdapter<SearchResult, SearchAdapter.Stock
         private TextView regularMarketPriceTv;
         private TextView regularMarketChangeTv;
         private ImageView starIv;
+        private ImageView stockIv;
         private StockAdapterListener adapterListener;
         private HomeStockAdapterListener homeStockAdapterListener;
         private int position;
@@ -73,6 +79,7 @@ public class SearchAdapter extends ListAdapter<SearchResult, SearchAdapter.Stock
             regularMarketPriceTv = itemView.findViewById(R.id.regular_market_price);
             regularMarketChangeTv = itemView.findViewById(R.id.regular_market_change);
             starIv = itemView.findViewById(R.id.star_iv);
+            stockIv = itemView.findViewById(R.id.stock_iv);
 
             this.position = position;
 
@@ -82,13 +89,6 @@ public class SearchAdapter extends ListAdapter<SearchResult, SearchAdapter.Stock
             starIv.setVisibility(View.GONE);
             regularMarketPriceTv.setVisibility(View.GONE);
             regularMarketChangeTv.setVisibility(View.GONE);
-
-//            itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    homeStockAdapterListener.onCardClick(stock);
-//                }
-//            });
 
             int cornerRadius = (int) (itemView.getContext().getResources().getDisplayMetrics().density * 16);
             cardView.setRadius(cornerRadius);

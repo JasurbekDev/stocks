@@ -247,6 +247,8 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
             public void onResponse(Call<NewsResponse> call, Response<NewsResponse> response) {
                 if (response.isSuccessful()) {
                     stockNewsList.postValue(response.body().getStockNewsList());
+                } else {
+                    stockNewsList.postValue(new ArrayList<>());
                 }
                 isStockNewsLoading.postValue(false);
             }

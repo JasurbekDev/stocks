@@ -44,9 +44,9 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
     private StockAdapter adapter;
     private StocksViewModel viewModel;
     private ProgressBar progressBar;
+    private ImageView emptyBoxIv;
     private boolean isFavourites;
     private String stockValue;
-    private ProgressBar paginationProgressBar;
     private List<Stock> dbLikedStocks = new ArrayList<>();
     private List<Stock> dbStocks = new ArrayList<>();
     private int searchPageNumber = 1;
@@ -79,7 +79,7 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
 
         recyclerView = view.findViewById(R.id.stock_rv);
         progressBar = view.findViewById(R.id.stocks_progress_bar);
-        paginationProgressBar = view.findViewById(R.id.paging_progress_bar);
+        emptyBoxIv = view.findViewById(R.id.home_empty_box_iv);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         adapter = new StockAdapter(this);
@@ -115,6 +115,11 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
                 public void onChanged(List<Stock> stocks) {
 //                    adapter.notifyDataSetChanged();
                     progressBar.setVisibility(View.GONE);
+                    if (stocks.isEmpty()) {
+                        emptyBoxIv.setVisibility(View.VISIBLE);
+                    } else {
+                        emptyBoxIv.setVisibility(View.GONE);
+                    }
                     adapter.submitList(stocks);
                 }
             });
@@ -139,6 +144,11 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
                 public void onChanged(List<Stock> stocks) {
 //                    adapter.notifyDataSetChanged();
                     progressBar.setVisibility(View.GONE);
+                    if (stocks.isEmpty()) {
+                        emptyBoxIv.setVisibility(View.VISIBLE);
+                    } else {
+                        emptyBoxIv.setVisibility(View.GONE);
+                    }
 //                    Log.d(TAG, "onChanged: " + stocks.get(0).getRegularMarketChange());
                     dbStocks = stocks;
                     adapter.submitList(stocks);
@@ -152,7 +162,6 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
                 if(!recyclerView.canScrollVertically(RecyclerView.FOCUS_DOWN)) {
                     searchPageNumber++;
                     if (searchTotalPageNumber != 0 && searchPageNumber <= searchTotalPageNumber) {
-                        paginationProgressBar.setVisibility(View.VISIBLE);
                         viewModel.getRemoteStocks(stockValue, searchPageNumber);
                     }
                 }

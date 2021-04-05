@@ -1,5 +1,7 @@
 package com.idyllic.stocks.ui.adapters;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +63,14 @@ public class StockNewsAdapter extends RecyclerView.Adapter<StockNewsAdapter.Stoc
             for (int i = 0; i < 4; i++) {
                 date.append(" ").append(dateParts.get(i));
             }
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(stockNews.getLink()));
+                    itemView.getContext().startActivity(intent);
+                }
+            });
 
             newsDate.setText(date.toString());
         }

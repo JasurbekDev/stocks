@@ -1,9 +1,11 @@
 package com.idyllic.stocks.ui.layouts;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -28,6 +30,7 @@ public class StockNewsFragment extends Fragment {
     private StockNewsAdapter adapter;
     private StocksViewModel viewModel;
     private ProgressBar progressBar;
+    private ImageView emptyBoxIv;
     private String symbol;
 
     public static StockNewsFragment getInstance(String symmbol) {
@@ -50,6 +53,7 @@ public class StockNewsFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.stock_news_progress_bar);
         recyclerView = view.findViewById(R.id.stock_news_rv);
+        emptyBoxIv = view.findViewById(R.id.news_empty_box_iv);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setHasFixedSize(true);
 
@@ -60,8 +64,13 @@ public class StockNewsFragment extends Fragment {
             @Override
             public void onChanged(List<StockNews> stockNewsList) {
                 if (stockNewsList != null) {
+                    if (stockNewsList.isEmpty()) {
+                        emptyBoxIv.setVisibility(View.VISIBLE);
+                    }
                     adapter.setStockNewsList(stockNewsList);
                     adapter.notifyDataSetChanged();
+                } else {
+                    emptyBoxIv.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -71,6 +80,7 @@ public class StockNewsFragment extends Fragment {
             public void onChanged(Boolean isLoading) {
                 if (isLoading) {
                     progressBar.setVisibility(View.VISIBLE);
+                    emptyBoxIv.setVisibility(View.GONE);
                 } else {
                     progressBar.setVisibility(View.GONE);
                 }

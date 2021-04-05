@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/stock_item_root"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginLeft="16dp"
@@ -36,7 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_yandex" />
+                    tools:src="@drawable/ic_no_image" />
 
             </androidx.cardview.widget.CardView>
 
