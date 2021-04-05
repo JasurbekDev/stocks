@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import com.idyllic.stocks.data.StocksRepoImpl;
 import com.idyllic.stocks.data.models.SearchResult;
 import com.idyllic.stocks.data.models.Stock;
+import com.idyllic.stocks.data.models.StockNews;
 import com.idyllic.stocks.data.models.StockResponse;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class StocksViewModel extends AndroidViewModel {
 
 
     private StocksRepoImpl repository;
+
 
     public void insertStocks(List<Stock> stocks) {
         repository.insertStocks(stocks);
@@ -70,6 +72,14 @@ public class StocksViewModel extends AndroidViewModel {
 
     public LiveData<List<SearchResult>> searchStocks(String query) {
         return repository.searchStocks(query);
+    }
+
+    public LiveData<List<StockNews>> getStockNews(String symbol) {
+        return repository.getStockNews(symbol);
+    }
+
+    public LiveData<Boolean> isStockNewsLoading() {
+        return repository.getIsStockNewsLoading();
     }
 
 //    public LiveData<List<SearchResult>> getSearchResults() {

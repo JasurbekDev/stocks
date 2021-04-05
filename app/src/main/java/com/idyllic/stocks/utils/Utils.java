@@ -3,7 +3,7 @@ package com.idyllic.stocks.utils;
 public class Utils {
     public static final String MBOUM_BASE_URL = "https://mboum.com/api/v1/";
     public static final String FINNHUB_BASE_URL = "https://finnhub.io/api/v1/";
-    public static final String MBOUM_API_KEY = "demo"; // THG470CszWjxbusGQQhe2I5bvEcSDMcEZCg1LvxvOptWVRX06w9e8ClEvc1O
+    public static final String MBOUM_API_KEY = "demo";
     public static final String FINNHUB_API_KEY = "c1l6gla37fko6in51s40";
     public static final String FINNHUB_STOCK_LOGO_URL = "https://finnhub.io/api/logo?symbol=";
 

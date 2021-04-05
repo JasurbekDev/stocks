@@ -10,6 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.idyllic.stocks.data.models.Stock;
 import com.idyllic.stocks.ui.layouts.ChartFragment;
 import com.idyllic.stocks.ui.layouts.HomeStockAdapterListener;
+import com.idyllic.stocks.ui.layouts.StockNewsFragment;
 import com.idyllic.stocks.ui.layouts.StocksFragment;
 import com.idyllic.stocks.ui.layouts.SummaryFragment;
 import com.idyllic.stocks.utils.Utils;
@@ -54,8 +55,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
             case SUMMARY:
                 return SummaryFragment.getInstance(stock);
             case NEWS:
-
-                break;
+                return StockNewsFragment.getInstance(stock.getSymbol());
         }
         return StocksFragment.getInstance(stockValue == Utils.StockValues.FAVOURITES, Utils.StockValues.values()[position], homeStockAdapterListener);
     }

@@ -1,7 +1,9 @@
 package com.idyllic.stocks.data;
 
+import com.idyllic.stocks.data.models.NewsResponse;
 import com.idyllic.stocks.data.models.Profile;
 import com.idyllic.stocks.data.models.Stock;
+import com.idyllic.stocks.data.models.StockNews;
 import com.idyllic.stocks.data.models.StockResponse;
 import com.idyllic.stocks.utils.Utils;
 
@@ -25,5 +27,9 @@ public interface MboumApi {
     @Headers("X-Mboum-Secret:" + Utils.MBOUM_API_KEY)
     @GET("qu/quote/profile")
     Call<Profile> getProfile(@Query("symbol") String symbol);
+
+    @Headers("X-Mboum-Secret:" + Utils.MBOUM_API_KEY)
+    @GET("ne/news")
+    Call<NewsResponse> getStockNews(@Query("symbol") String symbol);
 
 }

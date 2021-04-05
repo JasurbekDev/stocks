@@ -9,9 +9,11 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.idyllic.stocks.data.db.StockDao;
 import com.idyllic.stocks.data.db.StockDatabase;
+import com.idyllic.stocks.data.models.NewsResponse;
 import com.idyllic.stocks.data.models.SearchResponse;
 import com.idyllic.stocks.data.models.SearchResult;
 import com.idyllic.stocks.data.models.Stock;
+import com.idyllic.stocks.data.models.StockNews;
 import com.idyllic.stocks.data.models.StockResponse;
 import com.idyllic.stocks.utils.Utils;
 
@@ -32,6 +34,8 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
     private MutableLiveData<List<Stock>> remoteStocks = new MutableLiveData<>();
     private MutableLiveData<List<SearchResult>> searchResultStocks = new MutableLiveData<>();
     private MutableLiveData<StockResponse> stockResponse = new MutableLiveData<>();
+    private MutableLiveData<List<StockNews>> stockNewsList = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isStockNewsLoading = new MutableLiveData<>();
 
     private MboumApi mboumApi;
     private FinnhubApi finnhubApi;
@@ -91,34 +95,6 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
     void doNothing(int num) {
 
     }
-
-//    public StockResponse getMostWatchedStocks() {
-//        Call<List<StockResponse>> stocks = stocksApi.getMostWatchedStocks();
-//        stocks.enqueue(new Callback<List<StockResponse>>() {
-//            @Override
-//            public void onResponse(Call<List<StockResponse>> call, Response<List<StockResponse>> response) {
-//                if (response.isSuccessful()) {
-//                    stockResponse.postValue(response.body().get(0));
-//                    for (Stock stock : response.body().get(0).getStocks()) {
-//                        Log.d(TAG, "onResponse: " + stock.getPostMarketChange());
-//                        Log.d(TAG, "onResponse: " + stock.getSymbol());
-//                        insertStock(stock);
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<StockResponse>> call, Throwable t) {
-//                Log.e(TAG, "onFailure: ", t);
-//            }
-//        });
-//        return null;
-//    }
-
-//    @Override
-//    public LiveData<List<Stock>> getAllStocks() {
-//        return allStocks;
-//    }
 
     @Override
     public LiveData<List<Stock>> getDbStocks(String stockValue) {
@@ -262,5 +238,28 @@ public class StocksRepoImpl implements StocksRepo, StockDbRepo {
 
     public LiveData<List<SearchResult>> getSearchResults() {
         return searchResultStocks;
+    }
+
+    public LiveData<List<StockNews>> getStockNews(String symbol) {
+        isStockNewsLoading.postValue(true);
+        mboumApi.getStockNews(symbol).enqueue(new Callback<NewsResponse>() {
+            @Override
+            public void onResponse(Call<NewsResponse> call, Response<NewsResponse> response) {
+                if (response.isSuccessful()) {
+                    stockNewsList.postValue(response.body().getStockNewsList());
+                }
+                isStockNewsLoading.postValue(false);
+            }
+
+            @Override
+            public void onFailure(Call<NewsResponse> call, Throwable t) {
+                isStockNewsLoading.postValue(false);
+            }
+        });
+        return stockNewsList;
+    }
+
+    public LiveData<Boolean> getIsStockNewsLoading() {
+        return isStockNewsLoading;
     }
 }
