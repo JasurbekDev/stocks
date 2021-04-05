@@ -62,13 +62,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         setSearchViewOnClickListener(searchView, this);
 
-//        TextView textView = new TextView(getContext());
-//        textView.setText("Stocks");
-
-//        tabLayout.addTab(tabLayout.newTab().setText("Day gainers"));
-//        tabLayout.addTab(tabLayout.newTab().setText("Favourite"));
-//        tabLayout.addTab(tabLayout.newTab().setText("3"));
-//        tabLayout.addTab(tabLayout.newTab().setText("4"));
 
         List<Utils.StockValues> stockValues = new ArrayList<>();
         stockValues.add(Utils.StockValues.DAY_GAINERS);
@@ -123,7 +116,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
 
-
     public static void setSearchViewOnClickListener(View v, View.OnClickListener listener) {
         if (v instanceof ViewGroup) {
             ViewGroup group = (ViewGroup) v;
@@ -148,12 +140,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         super.onViewStateRestored(savedInstanceState);
         navController = findNavController(view);
     }
-
-//    @Override
-//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        navController = Navigation.findNavController(view);
-//    }
 
 
     @Override

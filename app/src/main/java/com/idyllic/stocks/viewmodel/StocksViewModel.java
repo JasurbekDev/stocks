@@ -52,11 +52,6 @@ public class StocksViewModel extends AndroidViewModel {
         return repository.getStockResponse();
     }
 
-//    public LiveData<List<Stock>> getMostWatchedStocks() {
-//        Log.d(TAG, "onChanged: came");
-//        repository.getMostWatchedStocks();
-//        return repository.getDbStocks();
-//    }
 
     public LiveData<List<Stock>> getLikedStocks() {
         return repository.getLikedStocks();
@@ -82,7 +77,5 @@ public class StocksViewModel extends AndroidViewModel {
         return repository.getIsStockNewsLoading();
     }
 
-//    public LiveData<List<SearchResult>> getSearchResults() {
-//        return repository.getSearchResults();
-//    }
+
 }

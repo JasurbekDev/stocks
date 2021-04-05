@@ -31,8 +31,8 @@ public class SearchAdapter extends ListAdapter<SearchResult, SearchAdapter.Stock
 
     public SearchAdapter() {
         super(SearchResult.DIFF_CALLBACK);
-//        this.adapterListener = adapterListener;
-//        this.homeStockAdapterListener = homeStockAdapterListener;
+
+
     }
 
     @NonNull
@@ -47,10 +47,6 @@ public class SearchAdapter extends ListAdapter<SearchResult, SearchAdapter.Stock
         holder.bind(getItem(position), position);
     }
 
-//    @Override
-//    public int getItemCount() {
-//        return getItemCount();
-//    }
 
     class StockViewHolder extends RecyclerView.ViewHolder {
 

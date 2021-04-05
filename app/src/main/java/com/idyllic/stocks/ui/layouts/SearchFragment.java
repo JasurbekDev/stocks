@@ -79,7 +79,7 @@ public class SearchFragment extends Fragment implements StockAdapter.StockAdapte
     public void onStart() {
         super.onStart();
         searchView.requestFocus();
-        InputMethodManager imm = (InputMethodManager)   getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 

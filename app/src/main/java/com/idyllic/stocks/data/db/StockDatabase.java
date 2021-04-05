@@ -15,6 +15,7 @@ import com.idyllic.stocks.data.models.Stock;
 @Database(entities = {Stock.class}, version = 1)
 public abstract class StockDatabase extends RoomDatabase {
     private static StockDatabase instance;
+
     public abstract StockDao stockDao();
 
     public static synchronized StockDatabase getInstance(Context context) {

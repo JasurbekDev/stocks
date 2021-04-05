@@ -58,7 +58,7 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
         Bundle bundle = new Bundle();
         bundle.putBoolean(IS_FAVOURITES, isFavourites);
         bundle.putString(STOCK_VALUE, stockValue.toString().toLowerCase());
-//        bundle.putParcelable("homeStockAdapterListener", homeStockAdapterListener);
+
 
         stocksFragment.setArguments(bundle);
         return stocksFragment;
@@ -67,9 +67,6 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
     public StocksFragment() {
     }
 
-//    public StocksFragment(HomeStockAdapterListener homeStockAdapterListener) {
-//        this.homeStockAdapterListener = homeStockAdapterListener;
-//    }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Nullable
@@ -113,7 +110,7 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
             viewModel.getLikedStocks().observe(getActivity(), new Observer<List<Stock>>() {
                 @Override
                 public void onChanged(List<Stock> stocks) {
-//                    adapter.notifyDataSetChanged();
+
                     progressBar.setVisibility(View.GONE);
                     if (stocks.isEmpty()) {
                         emptyBoxIv.setVisibility(View.VISIBLE);
@@ -142,14 +139,14 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
             viewModel.getDbStocks(stockValue).observe(getViewLifecycleOwner(), new Observer<List<Stock>>() {
                 @Override
                 public void onChanged(List<Stock> stocks) {
-//                    adapter.notifyDataSetChanged();
+
                     progressBar.setVisibility(View.GONE);
                     if (stocks.isEmpty()) {
                         emptyBoxIv.setVisibility(View.VISIBLE);
                     } else {
                         emptyBoxIv.setVisibility(View.GONE);
                     }
-//                    Log.d(TAG, "onChanged: " + stocks.get(0).getRegularMarketChange());
+
                     dbStocks = stocks;
                     adapter.submitList(stocks);
                 }
@@ -159,7 +156,7 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
         recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if(!recyclerView.canScrollVertically(RecyclerView.FOCUS_DOWN)) {
+                if (!recyclerView.canScrollVertically(RecyclerView.FOCUS_DOWN)) {
                     searchPageNumber++;
                     if (searchTotalPageNumber != 0 && searchPageNumber <= searchTotalPageNumber) {
                         viewModel.getRemoteStocks(stockValue, searchPageNumber);
@@ -199,11 +196,11 @@ public class StocksFragment extends Fragment implements StockAdapter.StockAdapte
         boolean isLiked = stock.isLiked();
         if (isLiked) {
             starIv.setImageResource(R.drawable.ic_star_unliked);
-//            stock.setLiked(false);
+
             viewModel.dislike(stock.getSymbol());
         } else {
             starIv.setImageResource(R.drawable.ic_star_liked);
-//            stock.setLiked(true);
+
             viewModel.like(stock.getSymbol());
         }
     }

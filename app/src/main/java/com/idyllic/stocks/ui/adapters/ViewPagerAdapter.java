@@ -1,7 +1,6 @@
 package com.idyllic.stocks.ui.adapters;
 
 
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;

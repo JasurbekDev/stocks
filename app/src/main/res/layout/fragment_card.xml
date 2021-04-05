@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.layouts.CardFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -22,12 +22,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
             android:layout_marginTop="22dp"
             android:layout_marginBottom="22dp"
-            app:layout_scrollFlags="scroll|snap"
             android:fitsSystemWindows="true"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_scrollFlags="scroll|snap">
 
             <ImageView
                 android:id="@+id/card_arrow_back"
@@ -48,19 +48,19 @@
                     android:id="@+id/card_stock_symbol"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
                     android:fontFamily="@font/montserrat_bold"
                     android:textColor="@color/dark"
+                    android:textSize="18sp"
                     tools:text="AAPL" />
 
                 <TextView
                     android:id="@+id/card_stock_short_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
                     android:layout_marginTop="4dp"
                     android:fontFamily="@font/montserrat_semibold"
                     android:textColor="@color/dark"
+                    android:textSize="12sp"
                     tools:text="Apple Inc." />
 
             </LinearLayout>
@@ -80,10 +80,10 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_gravity="start"
-            app:tabMode="scrollable"
-            app:tabGravity="fill"
             android:background="@android:color/transparent"
+            app:tabGravity="fill"
             app:tabIndicatorHeight="0dp"
+            app:tabMode="scrollable"
             app:tabRippleColor="@null" />
 
     </com.google.android.material.appbar.AppBarLayout>
